@@ -22,6 +22,9 @@
                     <% if(sms.senderNumber) { %>
                         <p><strong>Sender Number:</strong> <%= sms.senderNumber %></p>
                     <% } %>
+                    <% if(sms.receiverNumber) { %>
+                        <p><strong>Receiver (SIM) Number:</strong> <%= sms.receiverNumber %></p>
+                    <% } %>
                     <p><strong>Title:</strong> <%= sms.title %></p>
                     <p><strong>Body:</strong> <%= sms.body %></p>
                     <p class="timestamp"><strong>Timestamp:</strong> <%= sms.timestamp %></p>
